@@ -9,7 +9,7 @@
             <div class="card-body">
               <p class="card-text">{{ object.full_name | upper }}</p>
               <p class="card-text">{{ object.email }}</p>
-              <p class="card-text">Комментарий: {{ object.comment }}</p>
+              <p class="card-text">Комментарий: {{ object.comment | default:"Комментарий отсутствует" }}</p>
               <div class="d-flex justify-content-between align-items-center">
                 <div class="btn-group">
                   <a class="btn btn-secondary" href="{% url 'mailing:recipient_list' %}" role="button">Назад</a>
