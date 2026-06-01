@@ -28,7 +28,7 @@ class MessageForm(forms.ModelForm):
 class MailingForm(forms.ModelForm):
     class Meta:
         model = Mailing
-        exclude = ("first_sending",)
+        exclude = ("first_sending", "owner")
 
     def __init__(self, *args, **kwargs):
         super(MailingForm, self).__init__(*args, **kwargs)
