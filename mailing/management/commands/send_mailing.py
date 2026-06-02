@@ -20,14 +20,14 @@ class Command(BaseCommand):
                         try:
                             send_mail(mailing.message.topic, mailing.message.text, EMAIL_HOST_USER, [recipient.email])
 
-                            AttemptSending.objects.create(mailing=mailing, status="success",
-                                                          response="Сообщение отправлено успешно")
+                            AttemptSending.objects.create(
+                                mailing=mailing, status="success", response="Сообщение отправлено успешно"
+                            )
 
                         except Exception as e:
                             AttemptSending.objects.create(mailing=mailing, status="not_success", response=str(e))
 
                     mailing.status = "launched"
                     mailing.save()
-
 
         send_mailing()

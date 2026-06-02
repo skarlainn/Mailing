@@ -25,9 +25,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "first_sending",
-                    models.DateTimeField(
-                        auto_now_add=True, verbose_name="Дата первой рассылки"
-                    ),
+                    models.DateTimeField(auto_now_add=True, verbose_name="Дата первой рассылки"),
                 ),
                 (
                     "end_sending",
@@ -80,9 +78,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "text",
-                    models.TextField(
-                        help_text="Напишите сообщение", verbose_name="Текст сообщения"
-                    ),
+                    models.TextField(help_text="Напишите сообщение", verbose_name="Текст сообщения"),
                 ),
             ],
             options={
@@ -114,9 +110,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "full_name",
-                    models.CharField(
-                        help_text="Введите ФИО", max_length=150, verbose_name="ФИО"
-                    ),
+                    models.CharField(help_text="Введите ФИО", max_length=150, verbose_name="ФИО"),
                 ),
                 (
                     "comment",
@@ -148,9 +142,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "time",
-                    models.DateTimeField(
-                        auto_now=True, verbose_name="Дата и время попытки"
-                    ),
+                    models.DateTimeField(auto_now=True, verbose_name="Дата и время попытки"),
                 ),
                 (
                     "status",

@@ -15,6 +15,7 @@ from mailing.models import Recipient, Message, Mailing, AttemptSending
 from mailing.services import get_all_messages, get_all_recipients, get_all_mailing
 from users.models import User
 
+
 class HomeView(TemplateView):
     template_name = "mailing/home.html"
 
@@ -36,8 +37,9 @@ class MainPageView(LoginRequiredMixin, TemplateView):
 
         else:
             context["total_mailing"] = Mailing.objects.filter(owner=user).count()
-            context["active_mailing"] = Mailing.objects.filter(owner=user).filter(
-                status__in=["created", "launched"]).count()
+            context["active_mailing"] = (
+                Mailing.objects.filter(owner=user).filter(status__in=["created", "launched"]).count()
+            )
             context["unique_recipients"] = Recipient.objects.filter(owner=user).distinct().count()
 
         return context
@@ -171,11 +173,12 @@ class MailingDeleteView(LoginRequiredMixin, DeleteView):
     model = Mailing
     success_url = reverse_lazy("mailing:mailing_list")
 
+
 class MailingSendView(LoginRequiredMixin, View):
     def get(self, request, pk, *args, **kwargs):
         mailing = get_object_or_404(Mailing, pk=pk)
 
-        return render(request, 'mailing/mailing_send.html', {'mailing': mailing})
+        return render(request, "mailing/mailing_send.html", {"mailing": mailing})
 
     def post(self, request, pk, *args, **kwargs):
         mailing = get_object_or_404(Mailing, pk=pk)
@@ -187,7 +190,9 @@ class MailingSendView(LoginRequiredMixin, View):
                 try:
                     send_mail(mailing.message.topic, mailing.message.text, EMAIL_HOST_USER, [recipient.email])
 
-                    AttemptSending.objects.create(mailing=mailing, status="success", response="Сообщение отправлено успешно")
+                    AttemptSending.objects.create(
+                        mailing=mailing, status="success", response="Сообщение отправлено успешно"
+                    )
 
                 except Exception as e:
                     AttemptSending.objects.create(mailing=mailing, status="not_success", response=str(e))
@@ -196,6 +201,7 @@ class MailingSendView(LoginRequiredMixin, View):
         mailing.save()
 
         return redirect("mailing:mailing_list")
+
 
 class MailingReportView(LoginRequiredMixin, DetailView):
     model = Mailing
@@ -214,15 +220,16 @@ class MailingReportView(LoginRequiredMixin, DetailView):
 
         return super().get(request, *args, **kwargs)
 
+
 class DisabledMailingView(LoginRequiredMixin, View):
 
     def post(self, request, pk):
         mailing = get_object_or_404(Mailing, id=pk)
 
-        if not request.user.has_perm('mailing.can_disabling_mailing'):
+        if not request.user.has_perm("mailing.can_disabling_mailing"):
             return HttpResponseForbidden("У вас недостаточно прав для отключения рассылки")
 
         mailing.status = "completed"
         mailing.save()
 
-        return redirect('mailing:mailing', pk=mailing.id)
+        return redirect("mailing:mailing", pk=mailing.id)

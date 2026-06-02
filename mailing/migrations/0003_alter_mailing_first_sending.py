@@ -13,8 +13,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="mailing",
             name="first_sending",
-            field=models.DateTimeField(
-                blank=True, null=True, verbose_name="Начало рассылки"
-            ),
+            field=models.DateTimeField(blank=True, null=True, verbose_name="Начало рассылки"),
         ),
     ]

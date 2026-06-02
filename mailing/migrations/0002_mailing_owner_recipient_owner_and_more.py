@@ -52,22 +52,16 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="attemptsending",
             name="response",
-            field=models.TextField(
-                blank=True, null=True, verbose_name="Ответ почтового сервера"
-            ),
+            field=models.TextField(blank=True, null=True, verbose_name="Ответ почтового сервера"),
         ),
         migrations.AlterField(
             model_name="attemptsending",
             name="time",
-            field=models.DateTimeField(
-                auto_now_add=True, verbose_name="Дата и время попытки"
-            ),
+            field=models.DateTimeField(auto_now_add=True, verbose_name="Дата и время попытки"),
         ),
         migrations.AlterField(
             model_name="mailing",
             name="end_sending",
-            field=models.DateTimeField(
-                blank=True, null=True, verbose_name="Дата окончания рассылки"
-            ),
+            field=models.DateTimeField(blank=True, null=True, verbose_name="Дата окончания рассылки"),
         ),
     ]

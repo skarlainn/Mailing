@@ -9,6 +9,7 @@ class UserRegisterForm(UserCreationForm):
         model = User
         fields = ["email", "password1", "password2"]
 
+
 class PasswordResetRequestForm(forms.Form):
     email = forms.EmailField()
 
@@ -27,13 +28,14 @@ class PasswordResetConfirmForm(forms.Form):
 
         return cleaned_data
 
+
 class UserForm(forms.ModelForm):
     class Meta:
         model = User
-        fields = ('avatar', 'phone_number', 'country')
+        fields = ("avatar", "phone_number", "country")
 
     def __init__(self, *args, **kwargs):
         super(UserForm, self).__init__(*args, **kwargs)
-        self.fields['avatar'].widget.attrs.update({'class': 'form-control'})
-        self.fields['phone_number'].widget.attrs.update({'class': 'form-control'})
-        self.fields['country'].widget.attrs.update({'class': 'form-control'})
+        self.fields["avatar"].widget.attrs.update({"class": "form-control"})
+        self.fields["phone_number"].widget.attrs.update({"class": "form-control"})
+        self.fields["country"].widget.attrs.update({"class": "form-control"})

@@ -6,7 +6,7 @@ from mailing.models import Recipient, Message, Mailing
 @admin.register(Recipient)
 class RecipientAdmin(admin.ModelAdmin):
     list_display = ("full_name", "email")
-    search_fields = ('full_name', 'email')
+    search_fields = ("full_name", "email")
 
 
 @admin.register(Message)
