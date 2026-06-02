@@ -1,5 +1,6 @@
 import secrets
 
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404, redirect, render
@@ -13,7 +14,7 @@ from config.settings import EMAIL_HOST_USER
 from users.forms import UserRegisterForm
 from users.models import User
 
-class UserCreateView(CreateView):
+class UserCreateView(LoginRequiredMixin, CreateView):
     model = User
     form_class = UserRegisterForm
     success_url = reverse_lazy("users:login")
@@ -40,7 +41,7 @@ def email_verification(request, token):
 
     return redirect(reverse("users:login"))
 
-class UserUpdateView(UpdateView):
+class UserUpdateView(LoginRequiredMixin, UpdateView):
     model = User
     form_class = UserForm
     template_name = "users/user_update.html"
@@ -106,9 +107,9 @@ def password_reset_invalid(request):
 def password_reset_done(request):
     return render(request, "users/password_reset_done.html")
 
-class UserDetailsView(DetailView):
+class UserDetailsView(LoginRequiredMixin, DetailView):
     model = User
 
 
-class UserListView(ListView):
+class UserListView(LoginRequiredMixin, ListView):
     model = User

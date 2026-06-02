@@ -76,3 +76,6 @@ class AttemptSending(models.Model):
         verbose_name = "Попытка"
         verbose_name_plural = "Попытки"
         ordering = ["time"]
+        permissions = [
+            ("can_disabling_mailing", "Can disabling mailing"),
+        ]
