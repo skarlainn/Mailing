@@ -28,7 +28,7 @@
     {% for attempt in object.attempts.all %}
         <tr>
             <td>{{ attempt.time }}</td>
-            <td>{{ attempt.status }}</td>
+            <td>{{ attempt.get_status_display }}</td>
             <td>{{ attempt.response }}</td>
         </tr>
     {% endfor %}

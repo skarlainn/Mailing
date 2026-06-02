@@ -1,0 +1,15 @@
+{% extends 'mailing/base.html' %}
+
+{% block content %}
+<h1 class="text-center" style="color: #0d6efd">Добро пожаловать, {{ user }}</h1>
+
+<h2 class="text-center" style="color: #0d6efd">У вас:</h2>
+
+<ul class="list-group list-group">
+  <li class="list-group-item">Всего рассылок: {{ total_mailing }}  </li>
+  <li class="list-group-item">{{ active_mailing }} из них активны на данный момент</li>
+  <li class="list-group-item">Уникальных получателей: {{ unique_recipients }}</li>
+</ul>
+
+<a class="btn btn-secondary" href="{% url 'mailing:mailing_list' %}" role="button">Посмотреть рассылки</a>
+{% endblock %}

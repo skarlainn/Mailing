@@ -5,12 +5,28 @@ from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse_lazy
 from django.views import View
-from django.views.generic import DetailView, ListView
+from django.views.generic import DetailView, ListView, TemplateView
 from django.views.generic.edit import UpdateView, DeleteView, CreateView
 
 from config.settings import EMAIL_HOST_USER
 from mailing.forms import RecipientForm, MessageForm, MailingForm
 from mailing.models import Recipient, Message, Mailing, AttemptSending
+from users.models import User
+
+
+class MainPageView(TemplateView):
+    template_name = "mailing/main_page.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context["user"] = User.objects.get(pk=self.request.user.pk)
+        context["total_mailing"] = Mailing.objects.count()
+        context["active_mailing"] = Mailing.objects.filter(status="created").count()
+        context["unique_recipients"] = Recipient.objects.distinct().count()
+
+        return context
+
 
 class RecipientListView(ListView):
     model = Recipient
