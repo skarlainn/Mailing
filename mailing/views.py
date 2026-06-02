@@ -109,7 +109,7 @@ class MailingSendView(View):
     def post(self, request, pk, *args, **kwargs):
         mailing = get_object_or_404(Mailing, pk=pk)
 
-        if mailing and mailing.status == "created":
+        if mailing and mailing.status == "created" and mailing.enabled is True:
             recipients = mailing.recipients.all()
 
             for recipient in recipients:
