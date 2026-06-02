@@ -32,7 +32,7 @@ class Message(models.Model):
 
 
 class Mailing(models.Model):
-    first_sending = models.DateTimeField(verbose_name="Дата первой рассылки", auto_now_add=True)
+    first_sending = models.DateTimeField(verbose_name="Начало рассылки", blank=True, null=True)
     end_sending = models.DateTimeField(verbose_name="Дата окончания рассылки", blank=True, null=True)
 
     STATUS_OF_MAILING = [

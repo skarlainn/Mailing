@@ -28,11 +28,9 @@ class MessageForm(forms.ModelForm):
 class MailingForm(forms.ModelForm):
     class Meta:
         model = Mailing
-        exclude = ("first_sending", "owner")
+        fields = ("message", "recipients",)
 
     def __init__(self, *args, **kwargs):
         super(MailingForm, self).__init__(*args, **kwargs)
-        self.fields["end_sending"].widget.attrs.update({"class": "form-control"})
-        self.fields["status"].widget.attrs.update({"class": "form-control"})
         self.fields["message"].widget.attrs.update({"class": "form-control"})
         self.fields["recipients"].widget.attrs.update({"class": "form-control"})
