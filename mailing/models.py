@@ -21,6 +21,8 @@ class Recipient(models.Model):
 class Message(models.Model):
     topic = models.CharField(max_length=150, verbose_name="Тема сообщения", help_text="Введите тему сообщения")
     text = models.TextField(verbose_name="Текст сообщения", help_text="Напишите сообщение")
+    owner = models.ForeignKey(User, on_delete=models.SET_NULL, verbose_name="Владелец", blank=True, null=True,
+                              related_name="messages")
 
     def __str__(self):
         return self.topic

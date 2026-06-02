@@ -1,6 +1,7 @@
 {% extends 'mailing/base.html' %}
 
 {% block content %}
+<h6 class="text-center" style="color: green">После регистрации мы отправим Вам на почту сообщение для подтверждения. Пожалуйста, следуйте инструкции из письма</h6>
 <div class="row">
     <div class="col-3">
     </div>
@@ -9,7 +10,7 @@
             {% csrf_token %}
             {{ form.non_field_errors }}
             {{ form.as_p }}
-            <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
+            <button type="submit" class="btn btn-primary w-100">Зарегистрироваться</button>
         </form>
     </div>
     <div class="col-3">

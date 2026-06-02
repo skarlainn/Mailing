@@ -12,6 +12,7 @@ from django.views.generic.edit import UpdateView, DeleteView, CreateView
 from config.settings import EMAIL_HOST_USER
 from mailing.forms import RecipientForm, MessageForm, MailingForm
 from mailing.models import Recipient, Message, Mailing, AttemptSending
+from mailing.services import get_all_messages, get_all_recipients, get_all_mailing
 from users.models import User
 
 class HomeView(TemplateView):
@@ -24,16 +25,37 @@ class MainPageView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
+        user = self.request.user
         context["user"] = User.objects.get(pk=self.request.user.pk)
-        context["total_mailing"] = Mailing.objects.count()
-        context["active_mailing"] = Mailing.objects.filter(status="created").count()
-        context["unique_recipients"] = Recipient.objects.distinct().count()
+        if user.has_perm("user.can_block_users"):
+
+            context["total_mailing"] = Mailing.objects.count()
+            context["active_mailing"] = Mailing.objects.filter(status__in=["created", "launched"]).count()
+            context["unique_recipients"] = Recipient.objects.distinct().count()
+            return context
+
+        else:
+            context["total_mailing"] = Mailing.objects.filter(owner=user).count()
+            context["active_mailing"] = Mailing.objects.filter(owner=user).filter(
+                status__in=["created", "launched"]).count()
+            context["unique_recipients"] = Recipient.objects.filter(owner=user).distinct().count()
 
         return context
 
 
 class RecipientListView(LoginRequiredMixin, ListView):
     model = Recipient
+
+    def get_queryset(self):
+        queryset = get_all_recipients()
+        user = self.request.user
+
+        if user.has_perm("user.can_block_users"):
+            return queryset
+
+        else:
+            queryset = queryset.filter(owner=user)
+            return queryset
 
 
 class RecipientDetailsView(LoginRequiredMixin, DetailView):
@@ -67,6 +89,17 @@ class RecipientDeleteView(LoginRequiredMixin, DeleteView):
 class MessageListView(LoginRequiredMixin, ListView):
     model = Message
 
+    def get_queryset(self):
+        queryset = get_all_messages()
+        user = self.request.user
+
+        if user.has_perm("user.can_block_users"):
+
+            return queryset
+        else:
+            queryset = queryset.filter(owner=user)
+            return queryset
+
 
 class MessageDetailsView(LoginRequiredMixin, DetailView):
     model = Message
@@ -76,6 +109,13 @@ class MessageCreateView(LoginRequiredMixin, CreateView):
     model = Message
     form_class = MessageForm
     success_url = reverse_lazy("mailing:message_list")
+
+    def form_valid(self, form):
+        message = form.save()
+        user = self.request.user
+        message.owner = user
+        message.save()
+        return super().form_valid(form)
 
 
 class MessageUpdateView(LoginRequiredMixin, UpdateView):
@@ -91,6 +131,17 @@ class MessageDeleteView(LoginRequiredMixin, DeleteView):
 
 class MailingListView(LoginRequiredMixin, ListView):
     model = Mailing
+
+    def get_queryset(self):
+        queryset = get_all_mailing()
+        user = self.request.user
+
+        if user.has_perm("user.can_block_users"):
+            return queryset
+
+        else:
+            queryset = queryset.filter(owner=user)
+            return queryset
 
 
 class MailingDetailsView(LoginRequiredMixin, DetailView):
@@ -121,7 +172,7 @@ class MailingDeleteView(LoginRequiredMixin, DeleteView):
     success_url = reverse_lazy("mailing:mailing_list")
 
 class MailingSendView(LoginRequiredMixin, View):
-    def get(self, request, pk):
+    def get(self, request, pk, *args, **kwargs):
         mailing = get_object_or_404(Mailing, pk=pk)
 
         return render(request, 'mailing/mailing_send.html', {'mailing': mailing})
@@ -129,15 +180,14 @@ class MailingSendView(LoginRequiredMixin, View):
     def post(self, request, pk, *args, **kwargs):
         mailing = get_object_or_404(Mailing, pk=pk)
 
-        if mailing and mailing.status == "created" and mailing.enabled is True:
+        if mailing or mailing.status == "created" and mailing.status == "launched":
             recipients = mailing.recipients.all()
 
             for recipient in recipients:
                 try:
                     send_mail(mailing.message.topic, mailing.message.text, EMAIL_HOST_USER, [recipient.email])
 
-                    AttemptSending.objects.create(mailing=mailing, status="success",
-                                              response="Сообщение отправлено успешно")
+                    AttemptSending.objects.create(mailing=mailing, status="success", response="Сообщение отправлено успешно")
 
                 except Exception as e:
                     AttemptSending.objects.create(mailing=mailing, status="not_success", response=str(e))

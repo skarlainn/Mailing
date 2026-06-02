@@ -1,15 +1,22 @@
 {% extends 'mailing/base.html' %}
 
 {% block content %}
-<h1 class="text-center" style="color: #0d6efd">Добро пожаловать, {{ user }}</h1>
+<h3 class="text-center" style="color: #0d6efd">Добро пожаловать, {{ user }}</h3>
 
-<h2 class="text-center" style="color: #0d6efd">У вас:</h2>
-
-<ul class="list-group list-group">
-  <li class="list-group-item">Всего рассылок: {{ total_mailing }}  </li>
-  <li class="list-group-item">{{ active_mailing }} из них активны на данный момент</li>
-  <li class="list-group-item">Уникальных получателей: {{ unique_recipients }}</li>
+<h4 class="text-center" style="color: #0d6efd">У вас:</h4>
+<div class="row">
+  <div class="col-4">
+  </div>
+  <div class="col-4">
+    <ul class="list-group list-group">
+  <li class="list-group-item">Всего рассылок: <strong>{{ total_mailing }}</strong>  </li>
+  <li class="list-group-item"><strong>{{ active_mailing }}</strong> из них активны на данный момент</li>
+  <li class="list-group-item">Уникальных получателей: <strong>{{ unique_recipients }}</strong></li>
 </ul>
 
-<a class="btn btn-secondary" href="{% url 'mailing:mailing_list' %}" role="button">Посмотреть рассылки</a>
+<a class="btn btn-info w-100" href="{% url 'mailing:mailing_list' %}" role="button">Посмотреть все рассылки</a>
+  </div>
+  <div class="col-4">
+  </div>
+</div>
 {% endblock %}

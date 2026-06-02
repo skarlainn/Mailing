@@ -151,3 +151,12 @@ SERVER_EMAIL = EMAIL_HOST_USER
 
 LOGIN_URL = 'mailing:home'
 
+CACHE_ENABLED = True
+if CACHE_ENABLED:
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+            'LOCATION': 'redis://localhost:6379/1',
+        }
+    }
+
