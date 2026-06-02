@@ -10,6 +10,9 @@
           <ul class="list-unstyled">
             <li><a href="{% url 'mailing:home' %}" class="text-white">Главная</a></li>
             {% if user.is_authenticated %}
+            {% if perms.user.can_block_users %}
+                <li><a href="{% url 'users:user_list' %}" class="text-white">Пользователи</a></li>
+              {% endif %}
             <li><a href="{% url 'mailing:mailing_list' %}" class="text-white">Рассылки</a></li>
             <li><a href="{% url 'mailing:message_list' %}" class="text-white">Сообщения</a></li>
             <li><a href="{% url 'mailing:recipient_list' %}" class="text-white">Получатели</a></li>

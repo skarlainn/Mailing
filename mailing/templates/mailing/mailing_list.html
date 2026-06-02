@@ -16,7 +16,7 @@
         <div class="col">
           <div class="card shadow-sm">
             <div class="card-body">
-              <p class="card-text">Рассылка от {{ mailing.first_sending | date:"d.m.Y г." }}</p>
+              <p class="card-text">Рассылка "{{ mailing..message.topic }}"</p>
               <div class="d-flex justify-content-between align-items-center">
                 <div class="btn-group">
                   <a class="btn btn-primary" href="{% url 'mailing:mailing' mailing.pk %}" role="button">Подробнее</a>

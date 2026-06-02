@@ -2,6 +2,7 @@ import datetime
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.mail import send_mail
+from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse_lazy
 from django.views import View
@@ -162,3 +163,16 @@ class MailingReportView(LoginRequiredMixin, DetailView):
         self.object = self.get_object()
 
         return super().get(request, *args, **kwargs)
+
+class DisabledMailingView(LoginRequiredMixin, View):
+
+    def post(self, request, pk):
+        mailing = get_object_or_404(Mailing, id=pk)
+
+        if not request.user.has_perm('mailing.can_disabling_mailing'):
+            return HttpResponseForbidden("У вас недостаточно прав для отключения рассылки")
+
+        mailing.status = "completed"
+        mailing.save()
+
+        return redirect('mailing:mailing', pk=mailing.id)

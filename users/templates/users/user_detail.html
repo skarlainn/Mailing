@@ -15,6 +15,12 @@
                 <div class="btn-group">
                   <a class="btn btn-secondary" href="{% url 'users:user_list' %}" role="button">Назад</a>
                   <a class="btn btn-primary" href="{% url 'users:user_update' user.pk %}" role="button">Редактировать</a>
+                  {% if perms.user.can_block_users and user.is_active%}
+                      <form action="{% url 'users:block_user' user.pk %}" method="post">
+                      {% csrf_token %}
+                      <button class="btn btn-danger" type="submit">Заблокировать пользователя</button>
+                      </form>
+                  {% endif %}
                 </div>
               </div>
             </div>
