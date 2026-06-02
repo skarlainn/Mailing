@@ -126,3 +126,20 @@ class MailingSendView(View):
         mailing.save()
 
         return redirect("mailing:mailing_list")
+
+class MailingReportView(DetailView):
+    model = Mailing
+    template_name = "mailing/mailing_report.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["successful_attempts"] = self.object.attempts.filter(status="success").count()
+        context["failed_attempts"] = self.object.attempts.filter(status="not_success").count()
+        context["total_attempts"] = self.object.attempts.count()
+
+        return context
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+
+        return super().get(request, *args, **kwargs)
