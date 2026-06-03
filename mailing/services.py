@@ -10,10 +10,8 @@ def get_all_recipients():
         if recipients is None:
             recipients = Recipient.objects.all()
             cache.set("recipients", recipients, 120)
-        else:
-            recipients = Recipient.objects.all()
-
         return recipients
+    return Recipient.objects.all()
 
 
 def get_all_messages():

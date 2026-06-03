@@ -1,6 +1,6 @@
 import datetime
 
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.core.mail import send_mail
 from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404, render, redirect
@@ -28,7 +28,7 @@ class MainPageView(LoginRequiredMixin, TemplateView):
 
         user = self.request.user
         context["user"] = User.objects.get(pk=self.request.user.pk)
-        if user.has_perm("user.can_block_users"):
+        if user.is_staff:
 
             context["total_mailing"] = Mailing.objects.count()
             context["active_mailing"] = Mailing.objects.filter(status__in=["created", "launched"]).count()
@@ -52,7 +52,7 @@ class RecipientListView(LoginRequiredMixin, ListView):
         queryset = get_all_recipients()
         user = self.request.user
 
-        if user.has_perm("user.can_block_users"):
+        if user.is_staff:
             return queryset
 
         else:
@@ -95,7 +95,7 @@ class MessageListView(LoginRequiredMixin, ListView):
         queryset = get_all_messages()
         user = self.request.user
 
-        if user.has_perm("user.can_block_users"):
+        if user.is_staff:
 
             return queryset
         else:
@@ -138,7 +138,7 @@ class MailingListView(LoginRequiredMixin, ListView):
         queryset = get_all_mailing()
         user = self.request.user
 
-        if user.has_perm("user.can_block_users"):
+        if user.is_staff:
             return queryset
 
         else:
@@ -155,8 +155,18 @@ class MailingCreateView(LoginRequiredMixin, CreateView):
     form_class = MailingForm
     success_url = reverse_lazy("mailing:mailing_list")
 
+    def get_form(self, form_class=None):
+        form = super().get_form(form_class)
+        user = self.request.user
+
+        if not user.is_staff:
+            form.fields['message'].queryset = Message.objects.filter(owner=user)
+            form.fields['recipients'].queryset = Recipient.objects.filter(owner=user)
+
+        return form
+
     def form_valid(self, form):
-        mailing = form.save()
+        mailing = form.save(commit=False)
         user = self.request.user
         mailing.owner = user
         mailing.save()
@@ -221,12 +231,12 @@ class MailingReportView(LoginRequiredMixin, DetailView):
         return super().get(request, *args, **kwargs)
 
 
-class DisabledMailingView(LoginRequiredMixin, View):
+class DisabledMailingView(PermissionRequiredMixin, View):
 
     def post(self, request, pk):
         mailing = get_object_or_404(Mailing, id=pk)
 
-        if not request.user.has_perm("mailing.can_disabling_mailing"):
+        if not request.user.is_staff:
             return HttpResponseForbidden("У вас недостаточно прав для отключения рассылки")
 
         mailing.status = "completed"
