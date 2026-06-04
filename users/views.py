@@ -130,7 +130,7 @@ class UserListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
 
 
 class BlockUserView(PermissionRequiredMixin, View):
-    permission_required = "users.can_block_users"  # ← проверка только здесь
+    permission_required = "users.can_block_users"
     raise_exception = True
 
     def post(self, request, pk):
