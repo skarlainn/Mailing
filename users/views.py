@@ -3,7 +3,6 @@ import secrets
 from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
-from django.http import HttpResponseForbidden
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy, reverse
 from django.views.generic import CreateView, UpdateView, DetailView, ListView
@@ -29,10 +28,12 @@ class UserCreateView(CreateView):
         user.token = token
         user.save()
         host = self.request.get_host()
-        url = f"http://{host}/users/email_confirm/{token}/"
+        confirm_url = self.request.build_absolute_uri(
+            reverse("users:email-confirm", kwargs={"token": token})
+        )
         send_mail(
             subject="Подтверждение почты",
-            message=f"Пожалуйста, перейдите по ссылке {url} для подтверждения почты",
+            message=f"Пожалуйста, перейдите по ссылке {confirm_url} для подтверждения почты",
             from_email=EMAIL_HOST_USER,
             recipient_list=[user.email],
         )
@@ -128,15 +129,15 @@ class UserListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
     permission_required = "user.can_block_users"
 
 
-class BlockUserView(LoginRequiredMixin, View):
+class BlockUserView(PermissionRequiredMixin, View):
+    permission_required = "users.can_block_users"  # ← проверка только здесь
+    raise_exception = True
 
     def post(self, request, pk):
         user = get_object_or_404(User, id=pk)
 
-        if not request.user.has_perm("user.can_block_users"):
-            return HttpResponseForbidden("У вас недостаточно прав для блокировки пользователя")
-
-        user.is_active = False
+        user.is_blocked = True
         user.save()
 
         return redirect("users:user", pk=user.id)
+

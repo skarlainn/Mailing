@@ -16,7 +16,12 @@
               <li><a href="{% url 'mailing:mailing_list' %}" class="text-white">Рассылки</a></li>
               <li><a href="{% url 'mailing:message_list' %}" class="text-white">Сообщения</a></li>
               <li><a href="{% url 'mailing:recipient_list' %}" class="text-white">Получатели</a></li>
-              <li><a href="{% url 'users:logout' %}" class="text-white">Выход</a></li>
+               <li>
+                    <form method="post" action="{% url 'users:logout' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-danger">Выйти</button>
+                    </form>
+                </li>
             {% else %}
               <li><a href="{% url 'users:login' %}" class="text-white">Вход</a></li>
               <li><a href="{% url 'users:register' %}" class="text-white">Регистрация</a></li>

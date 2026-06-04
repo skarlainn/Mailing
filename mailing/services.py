@@ -1,38 +1,26 @@
-from config.settings import CACHE_ENABLED
 from django.core.cache import cache
-
-from mailing.models import Recipient, Message, Mailing
+from .models import Recipient, Message, Mailing
 
 
 def get_all_recipients():
-    if CACHE_ENABLED:
-        recipients = cache.get("recipients")
-        if recipients is None:
-            recipients = Recipient.objects.all()
-            cache.set("recipients", recipients, 120)
-        return recipients
-    return Recipient.objects.all()
+    recipients = cache.get("recipients")
+    if recipients is None:
+        recipients = Recipient.objects.all()
+        cache.set("recipients", recipients, 120)  # кэш на 2 минуты
+    return recipients
 
 
 def get_all_messages():
-    if CACHE_ENABLED:
-        messages = cache.get("messages")
-        if messages is None:
-            messages = Message.objects.all()
-            cache.set("messages", messages, 120)
-        else:
-            messages = Message.objects.all()
-
-        return messages
+    messages = cache.get("messages")
+    if messages is None:
+        messages = Message.objects.all()
+        cache.set("messages", messages, 120)
+    return messages
 
 
 def get_all_mailing():
-    if CACHE_ENABLED:
-        mailing = cache.get("mailing")
-        if mailing is None:
-            mailing = Mailing.objects.all()
-            cache.set("mailing", mailing, 120)
-        else:
-            mailing = Mailing.objects.all()
-
-        return mailing
+    mailing = cache.get("mailing")
+    if mailing is None:
+        mailing = Mailing.objects.all()
+        cache.set("mailing", mailing, 120)
+    return mailing

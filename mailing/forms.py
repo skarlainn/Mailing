@@ -2,16 +2,20 @@ from django import forms
 from .models import Recipient, Message, Mailing
 
 
-class RecipientForm(forms.ModelForm):
+class BootstrapFormStylesMixin:
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            if isinstance(field.widget, (forms.Select, forms.SelectMultiple)):
+                field.widget.attrs['class'] = 'form-select'
+            else:
+                field.widget.attrs['class'] = 'form-control'
+
+class RecipientForm(BootstrapFormStylesMixin, forms.ModelForm):
     class Meta:
         model = Recipient
         fields = ["email", "full_name", "comment"]
 
-    def __init__(self, *args, **kwargs):
-        super(RecipientForm, self).__init__(*args, **kwargs)
-        self.fields["email"].widget.attrs.update({"class": "form-control"})
-        self.fields["full_name"].widget.attrs.update({"class": "form-control"})
-        self.fields["comment"].widget.attrs.update({"class": "form-control"})
 
 
 class MessageForm(forms.ModelForm):
@@ -19,10 +23,7 @@ class MessageForm(forms.ModelForm):
         model = Message
         fields = ["topic", "text"]
 
-    def __init__(self, *args, **kwargs):
-        super(MessageForm, self).__init__(*args, **kwargs)
-        self.fields["topic"].widget.attrs.update({"class": "form-control"})
-        self.fields["text"].widget.attrs.update({"class": "form-control"})
+
 
 
 class MailingForm(forms.ModelForm):
@@ -33,7 +34,3 @@ class MailingForm(forms.ModelForm):
             "recipients",
         )
 
-    def __init__(self, *args, **kwargs):
-        super(MailingForm, self).__init__(*args, **kwargs)
-        self.fields["message"].widget.attrs.update({"class": "form-control"})
-        self.fields["recipients"].widget.attrs.update({"class": "form-control"})
